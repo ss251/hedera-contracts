@@ -1,66 +1,55 @@
-## Foundry
+# HashSplits Orchestrator
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Smart contracts, scripts, and tests for the HashSplits AI revenue-sharing proof‑of‑concept on Hedera. The
+primary contract (`src/Orchestrator.sol`) manages immutable revenue splits on Hedera,
+handles both custodial balances and HBAR allowances, and issues scheduled transfers via
+the Hedera Schedule Service system contract.
 
-Foundry consists of:
+## Repository Layout
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- `src/Orchestrator.sol` – production contract
+- `script/DeployOrchestrator.sol` – Foundry script for deploying the orchestrator
+- `test/Orchestrator.t.sol` – unit tests with Hedera system-contract mocks
+- `broadcast/` – on-chain deployment artefacts (`forge script --broadcast`)
 
-## Documentation
+## Tooling
 
-https://book.getfoundry.sh/
+This project uses [Foundry](https://book.getfoundry.sh/) for compilation, scripting, and
+Solidity unit testing.
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+forge build             # compile contracts
+forge test              # run unit tests (uses local mocks for HTS/HSS/HAS)
+forge fmt               # format solidity sources and tests
 ```
 
-### Test
+## Hedera Testnet Deployment
 
-```shell
-$ forge test
+Latest deployment (verified via Hashscan/Sourcify):
+
+- **Network:** Hedera Testnet (`chainId 296`)
+- **Contract:** `Orchestrator`
+- **Address:** `0xbC0124204A9e8301fD96C637f3225F52c51fFAC0`
+- **Hashscan:** <https://hashscan.io/testnet/contract/0xbC0124204A9e8301fD96C637f3225F52c51fFAC0>
+- **Verification:** Sourcify (automatic during `forge script --verify`)
+
+Deployment command used:
+
+```bash
+forge script script/DeployOrchestrator.sol \
+  --rpc-url https://testnet.hashio.io/api \
+  --broadcast \
+  --verify \
+  --verifier sourcify \
+  --verifier-url https://server-verify.hashscan.io/
 ```
 
-### Format
+Set `HEDERA_PRIVATE_KEY` in your environment (or `.env`) to the hex-encoded private key
+for the account paying deployment fees.
 
-```shell
-$ forge fmt
-```
+## Notes
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- Unit tests rely on Foundry cheatcodes (`vm.etch`) to stand-in for Hedera system
+  contracts; they run locally and do not require Hedera connectivity.
+- Scheduled transfer status must still be confirmed off-chain until Hedera exposes a
+  read-only Schedule Service query via the system contract.
