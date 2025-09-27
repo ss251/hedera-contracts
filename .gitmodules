@@ -4,3 +4,6 @@
 [submodule "lib/hedera-smart-contracts"]
 	path = lib/hedera-smart-contracts
 	url = https://github.com/hashgraph/hedera-smart-contracts
+[submodule "lib/hedera-forking"]
+	path = lib/hedera-forking
+	url = https://github.com/hashgraph/hedera-forking

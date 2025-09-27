@@ -14,4 +14,20 @@ hedera_testnet = "${HEDERA_RPC_URL}"
 [profile.default.sourcify]
 api_url = "https://server-verify.hashscan.io/"
 
+[profile.fork]
+src = "src"
+out = "out"
+libs = ["lib"]
+remappings = [
+    "forge-std/=lib/forge-std/src/",
+    "hedera-smart-contracts/=lib/hedera-smart-contracts/"
+]
+verifier = "sourcify"
+
+[profile.fork.rpc_endpoints]
+hedera_testnet = "${HEDERA_RPC_URL}"
+
+[profile.fork.sourcify]
+api_url = "https://server-verify.hashscan.io/"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
