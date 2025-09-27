@@ -392,6 +392,11 @@ contract Orchestrator {
         return int64(int256(amount));
     }
 
+    // NOTE: The schedule service system contract does not yet expose a read-only status query. We
+    // attempt a `staticcall` to `authorizeSchedule` only to reuse its response codes as hints.
+    // Because `authorizeSchedule` is state-changing, the call reverts under static contexts on
+    // networks that enforce the restriction strictly. Until Hedera provides a true status getter,
+    // callers must continue to track execution/cancellation off-chain.
     function _getScheduleStatus(address schedule) internal view returns (ScheduleStatus status, bool known) {
         bytes memory callData = abi.encodeWithSelector(IHederaScheduleService.authorizeSchedule.selector, schedule);
         (bool success, bytes memory result) = HSS_PRECOMPILE.staticcall(callData);
